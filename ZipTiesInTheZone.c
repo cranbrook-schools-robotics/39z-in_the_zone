@@ -15,6 +15,9 @@ tMotor rightDriveMotors[] = {rBack, rFront};
 MotorSet leftDrive;
 MotorSet rightDrive;
 
+tMotor mobileGoalMotors[] = {lMobGoal, rMobGoal};
+MotorSet mobileGoal;
+
 void initIME(){
 	nMotorEncoder[rBack] = 0;
 	nMotorEncoder[lBack] = 0;
@@ -39,6 +42,7 @@ void pre_auton()
 	MotorSetInit (lift, liftMotors, 2);
 	MotorSetInit (leftDrive, leftDriveMotors, 2);
 	MotorSetInit (rightDrive, rightDriveMotors, 2);
+	MotorSetInit (mobileGoal, mobileGoalMotors, 2);
 	//InitHolonomicBase(driveTrain, driveMotors, 4);
 	//initializeHolonomicAuto(driveMotors, wheelAngles);
 	//displayLCDString(0,0,"INITIALIZING");
@@ -75,8 +79,9 @@ task usercontrol()
 	while (true)
 	{
 		setPower(lift, vexRT[Btn5U] ? 1 : vexRT[Btn5D] ? -1 : 0);
-		setPower(leftDrive, vexRT[Ch3]/127.);
-		setPower(rightDrive, vexRT[Ch2]/127.);
+		setPower(leftDrive, vexRT[Ch3Xmtr2]/127.);
+		setPower(rightDrive, -vexRT[Ch2Xmtr2]/127.);
+		setPower(mobileGoal, vexRT[Btn8UXmtr2] ? 1 : vexRT[Btn8DXmtr2] ? -1 : 0);
 		motor[chainBar] = vexRT[Btn6U] ? 127 : vexRT[Btn6D] ? -127 : 0;
 		motor[claw] = vexRT[Btn7U] ? 127 : vexRT[Btn7D] ? -127 : 0;
 	}
