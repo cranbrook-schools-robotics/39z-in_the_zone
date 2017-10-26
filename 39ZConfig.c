@@ -1,4 +1,8 @@
 #pragma config(I2C_Usage, I2C1, i2cSensors)
+#pragma config(Sensor, in1,    leftLiftPot,    sensorPotentiometer)
+#pragma config(Sensor, in2,    rightLiftPot,   sensorPotentiometer)
+#pragma config(Sensor, dgtl1,  leftEncoder,    sensorQuadEncoder)
+#pragma config(Sensor, dgtl3,  rightEncoder,   sensorQuadEncoder)
 #pragma config(Sensor, I2C_1,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign )
 #pragma config(Sensor, I2C_2,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign )
 #pragma config(Motor,  port1,           rMobGoal,      tmotorVex393_HBridge, openLoop)

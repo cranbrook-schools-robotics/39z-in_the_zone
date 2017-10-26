@@ -18,6 +18,8 @@ MotorSet rightDrive;
 tMotor mobileGoalMotors[] = {lMobGoal, rMobGoal};
 MotorSet mobileGoal;
 
+int liftTargetPercent = 0;
+
 void initIME(){
 	nMotorEncoder[rBack] = 0;
 	nMotorEncoder[lBack] = 0;
@@ -30,7 +32,29 @@ void initIME(){
 //	wait1Msec(2000);
 //	SensorValue[gyro] = 0; //Default Gyro heading is 0
 //}
-
+task liftControl()
+{
+	float leftPot = SensorValue(leftLiftPot);
+	float rightPot = SensorValue(rightLiftPot);
+	float leftPotTarget = 3610;
+	float rightPotTarget = 3673;
+	float leftError = 0;
+	float rightError = 0;
+	float kPl = 0.00029;
+	float kPr = 0.00024;
+	while (true)
+	{
+		leftPot = SensorValue(leftLiftPot);
+		rightPot = SensorValue(rightLiftPot);
+		leftPotTarget = 3610 - (18.05*liftTargetPercent);
+		rightPotTarget = 3673 - (18.79*liftTargetPercent);
+		leftError = leftPot - leftPotTarget;
+		rightError = rightPot - rightPotTarget;
+		motor[lLift] = leftError*kPl*(3610-leftPotTarget);
+		motor[rLift] = leftError*kPr*(3673-rightPotTarget);
+		//delay(30);
+	}
+}
 void pre_auton()
 {
 	bStopTasksBetweenModes = true;
@@ -78,11 +102,15 @@ task usercontrol()
 {
 	while (true)
 	{
+		//startTask(liftControl);
 		setPower(lift, vexRT[Btn5U] ? 1 : vexRT[Btn5D] ? -1 : 0);
+		//liftTargetPercent = liftTargetPercent + 2*(vexRT[Btn5U] ? 1 : (vexRT[Btn5D] ? -1 : 0));
+		liftTargetPercent = bound(liftTargetPercent, 0, 100);
 		setPower(leftDrive, vexRT[Ch3Xmtr2]/127.);
 		setPower(rightDrive, -vexRT[Ch2Xmtr2]/127.);
 		setPower(mobileGoal, vexRT[Btn8UXmtr2] ? 1 : vexRT[Btn8DXmtr2] ? -1 : 0);
 		motor[chainBar] = vexRT[Btn6U] ? 127 : vexRT[Btn6D] ? -127 : 0;
 		motor[claw] = vexRT[Btn7U] ? 127 : vexRT[Btn7D] ? -127 : 0;
+		delay(50);
 	}
 }
