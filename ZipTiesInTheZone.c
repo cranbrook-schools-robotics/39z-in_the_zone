@@ -176,9 +176,48 @@ void oldAutoRoutine()
 	setPower(mobileGoal, 0);
 }
 
-task autonomous()
+void defenseAuto()
+{
+	driveADistance(100);
+	turnLeft(75);
+	driveADistance(30);
+}
+
+void offenseMatchAuto()
+{
+	driveADistance(54);
+	setPower(mobileGoal, 1);
+	delay(1500);
+	setPower(mobileGoal, 0);
+	turnRight(180);
+	driveADistance(30);
+	setPower(lift, 1);
+	delay(1000);
+	setPower(lift, 0);
+	driveADistance(30);
+	setPower(mobileGoal, -1);
+	delay(500);
+	setPower(leftDrive, -1);
+	setPower(rightDrive, -1);
+	delay(1000);
+	setPower(mobileGoal, 0);
+	setPower(leftDrive, 0);
+	setPower(rightDrive, 0);
+
+
+}
+
+void progSkills()
 {
 
+}
+
+task autonomous()
+{
+	//oldAutoRoutine();
+	//defenseAuto();
+	//offenseMatchAuto();
+	//progSkills();
 }
 
 task usercontrol()
