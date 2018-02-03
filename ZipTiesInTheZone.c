@@ -209,7 +209,7 @@ void offenseMatchAuto()
 
 void progSkills()
 {
-
+	offenseMatchAuto();
 }
 
 task autonomous()
