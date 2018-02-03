@@ -25,13 +25,70 @@ void initIME(){
 	nMotorEncoder[lBack] = 0;
 }
 
-//void initGyro(){
-//	SensorType[gyro] = sensorNone; //Fixes common RobotC error with initializing Gyroscope
-//	wait1Msec(1000);
-//	SensorType[gyro] = sensorGyro;
-//	wait1Msec(2000);
-//	SensorValue[gyro] = 0; //Default Gyro heading is 0
-//}
+void initGyro(){
+	SensorType[gyro] = sensorNone; //Fixes common RobotC error with initializing Gyroscope
+	wait1Msec(1000);
+	SensorType[gyro] = sensorGyro;
+	wait1Msec(2000);
+	SensorValue[gyro] = 0; //Default Gyro heading is 0
+}
+
+//Drives a given number of inches
+void driveADistance(float inchesToDrive)
+{
+	float ticksToDrive = 360 * inchesToDrive / (4 * PI);
+	SensorValue[leftEncoder] = 0;
+	SensorValue[rightEncoder] = 0;
+	int rightEncoderCount = 0, leftEncoderCount = 0;
+	bool rightIsDone = false, leftIsDone = false;
+	float Kp = 0.5;
+	SensorValue[gyro] = 0;
+	int gyroReading = SensorValue[gyro];
+	while (!rightIsDone || !leftIsDone)
+	{
+		rightIsDone = rightEncoderCount>=ticksToDrive;
+		leftIsDone = leftEncoderCount>=ticksToDrive;
+		gyroReading = SensorValue[gyro];
+		rightEncoderCount += SensorValue[rightEncoder];
+		SensorValue[rightEncoder] = 0;
+		leftEncoderCount = SensorValue[leftEncoder];
+		SensorValue[leftEncoder] = 0;
+		float error = gyroReading;
+		setPower(rightDrive, rightIsDone ? 0 : 75 - Kp*error);
+		setPower(leftDrive, leftIsDone ? 0 : 75 + Kp*error);
+	}
+}
+void turnRight(float degreesToTurn)
+{
+	int deciDegreesToTurn = degreesToTurn * 10;
+	SensorValue[gyro] = 0;
+	int gyroReading = -SensorValue[gyro];
+	while (gyroReading < deciDegreesToTurn)
+	{
+		gyroReading = -SensorValue[gyro];
+		setPower(rightDrive, -0.5);
+		setPower(leftDrive, 0.5);
+	}
+	setPower(rightDrive, 0);
+	setPower(leftDrive, 0);
+}
+
+void turnLeft(float degreesToTurn)
+{
+	int deciDegreesToTurn = degreesToTurn * 10;
+	SensorValue[gyro] = 0;
+	int gyroReading = SensorValue[gyro];
+	while (gyroReading < deciDegreesToTurn)
+	{
+		gyroReading = SensorValue[gyro];
+		setPower(rightDrive, 0.5);
+		setPower(leftDrive, -0.5);
+	}
+	setPower(leftDrive, 0);
+	setPower(rightDrive, 0);
+}
+
+
 task liftControl()
 {
 	float leftPot = SensorValue(leftLiftPot);
@@ -55,43 +112,69 @@ task liftControl()
 		//delay(30);
 	}
 }
+
+void initLCD()
+{
+	bLCDBacklight = true;
+	clearLCDLine(0);
+	clearLCDLine(1);
+}
+
 void pre_auton()
 {
 	bStopTasksBetweenModes = true;
-	//bLCDBacklight = true;
-	//clearLCDLine(0);
-	//clearLCDLine(1);
+	initLCD();
 	initIME();
-	//initGyro();
+	initGyro();
 	MotorSetInit (lift, liftMotors, 2);
 	MotorSetInit (leftDrive, leftDriveMotors, 2);
 	MotorSetInit (rightDrive, rightDriveMotors, 2);
 	MotorSetInit (mobileGoal, mobileGoalMotors, 2);
-	//InitHolonomicBase(driveTrain, driveMotors, 4);
-	//initializeHolonomicAuto(driveMotors, wheelAngles);
-	//displayLCDString(0,0,"INITIALIZING");
+	displayLCDString(0,0,"INITIALIZING");
+
 }
 
-//task lcdManager()
-//{
-//	string lcdBatteryVoltages;
-//	while(true)
-//	{
-//		sprintf(lcdBatteryVoltages, "M: %.2f P: %.2f", MainBatteryVoltage(), SensorValue(pPowerExp)/182.4);
-//		clearLCDLine(0);
-//		clearLCDLine(1);
-//		displayLCDString(0,0,lcdBatteryVoltages);
-//		delay(300);
-//	}
-//}
+task lcdManager()
+{
+	string lcdBatteryVoltages;
+	while(true)
+	{
+		sprintf(lcdBatteryVoltages, "M: %.2f P: %.2f", MainBatteryVoltage(), SensorValue(pPowerExp)/182.4);
+		clearLCDLine(0);
+		clearLCDLine(1);
+		displayLCDString(0,0,lcdBatteryVoltages);
+		delay(300);
+	}
+}
 
-//void setArmPercentage (float percentage)
-//{
-//	leftPotVal = SensorValue(leftPot);
-//	rightPotVal = SensorValue(rightPot);
-//	int leftPotTarget = 3935*percentage/100 + 45;
-//	int rightPotTarget = -3590*percentage/100 + 3935;
-//}
+void oldAutoRoutine()
+{
+	setPower(leftDrive, 1);
+	setPower(rightDrive, -1);
+	delay (3200);
+	setPower(leftDrive, 0);
+	setPower(rightDrive, 0);
+	// old ^
+	setPower(lift, 1);
+	delay(650);
+	setPower(lift, 0);
+	motor[chainBar] = 127;
+	delay(1375);
+	motor[chainBar] = 0;
+	delay(300);
+	setPower(lift, -1);
+	delay(400);
+	setPower(lift, 0);
+	motor[claw] = -127;
+	delay(400);
+	setPower(lift, 1);
+	delay(400);
+	motor[claw] = 0;
+	setPower(lift, 0);
+	setPower(mobileGoal, 1);
+	delay(500);
+	setPower(mobileGoal, 0);
+}
 
 task autonomous()
 {
@@ -103,14 +186,14 @@ task usercontrol()
 	while (true)
 	{
 		//startTask(liftControl);
-		setPower(lift, vexRT[Btn5U] ? 1 : vexRT[Btn5D] ? -1 : 0);
+		setPower(lift, vexRT[Btn6U] ? 1 : vexRT[Btn6D] ? -1 : 0);
 		//liftTargetPercent = liftTargetPercent + 2*(vexRT[Btn5U] ? 1 : (vexRT[Btn5D] ? -1 : 0));
 		liftTargetPercent = bound(liftTargetPercent, 0, 100);
-		setPower(leftDrive, vexRT[Ch3Xmtr2]/127.);
-		setPower(rightDrive, -vexRT[Ch2Xmtr2]/127.);
-		setPower(mobileGoal, vexRT[Btn8UXmtr2] ? 1 : vexRT[Btn8DXmtr2] ? -1 : 0);
-		motor[chainBar] = vexRT[Btn6U] ? 127 : vexRT[Btn6D] ? -127 : 0;
-		motor[claw] = vexRT[Btn7U] ? 127 : vexRT[Btn7D] ? -127 : 0;
+		setPower(leftDrive, vexRT[Ch3]/127.);
+		setPower(rightDrive, -vexRT[Ch2]/127.);
+		setPower(mobileGoal, vexRT[Btn8U] ? 1 : vexRT[Btn8D] ? -1 : 0);
+		motor[chainBar] = vexRT[Btn7D] ? 127 : vexRT[Btn7U] ? -127 : 0;
+		motor[claw] = vexRT[Btn5D] ? 127 : vexRT[Btn5U] ? -127 : 0;
 		delay(50);
 	}
 }
