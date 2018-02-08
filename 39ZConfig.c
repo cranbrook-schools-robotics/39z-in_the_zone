@@ -5,6 +5,8 @@
 #pragma config(Sensor, in4,    pPowerExp,      sensorAnalog)
 #pragma config(Sensor, dgtl1,  leftEncoder,    sensorQuadEncoder)
 #pragma config(Sensor, dgtl3,  rightEncoder,   sensorQuadEncoder)
+#pragma config(Sensor, dgtl5,  leftButton,     sensorTouch)
+#pragma config(Sensor, dgtl6,  rightButton,    sensorTouch)
 #pragma config(Sensor, I2C_1,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign )
 #pragma config(Sensor, I2C_2,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign )
 #pragma config(Motor,  port1,           rMobGoal,      tmotorVex393_HBridge, openLoop)

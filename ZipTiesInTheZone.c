@@ -139,7 +139,7 @@ task lcdManager()
 	string lcdBatteryVoltages;
 	while(true)
 	{
-		sprintf(lcdBatteryVoltages, "M: %.2f P: %.2f", MainBatteryVoltage(), SensorValue(pPowerExp)/182.4);
+		sprintf(lcdBatteryVoltages, "M: %.2f P: %.2f", MainBatteryVoltage(), SensorValue(pPowerExp)/283.2);
 		clearLCDLine(0);
 		clearLCDLine(1);
 		displayLCDString(0,0,lcdBatteryVoltages);
@@ -214,7 +214,7 @@ void progSkills()
 
 task autonomous()
 {
-	//oldAutoRoutine();
+	oldAutoRoutine();
 	//defenseAuto();
 	//offenseMatchAuto();
 	//progSkills();
@@ -224,8 +224,11 @@ task usercontrol()
 {
 	while (true)
 	{
+		bool isLeftUp = (bool)SensorValue(leftButton);
+		bool isRightUp = (bool)SensorValue(rightButton);
 		//startTask(liftControl);
-		setPower(lift, vexRT[Btn6U] ? 1 : vexRT[Btn6D] ? -1 : 0);
+		startTask(lcdManager);
+		setPower(lift, (isLeftUp&&isRightUp&&vexRT[Btn6U]) ? 0.3 : vexRT[Btn6U] ? 1 : vexRT[Btn6D] ? -1 : 0);
 		//liftTargetPercent = liftTargetPercent + 2*(vexRT[Btn5U] ? 1 : (vexRT[Btn5D] ? -1 : 0));
 		liftTargetPercent = bound(liftTargetPercent, 0, 100);
 		setPower(leftDrive, vexRT[Ch3]/127.);
