@@ -3,15 +3,17 @@
 #include <CKVexMotorSet.h>
 task main()
 {
-float potVal1 = SensorValue(leftLiftPot);
+	//SensorValue(leftEncoder) = 0;
+	//SensorValue(rightEncoder) = 0;
+float potVal1 = SensorValue(gyro);
 float potVal2 = SensorValue(rightLiftPot);
 clearDebugStream();
 while(true)
 {
-	potVal1 = SensorValue(leftLiftPot);
+	potVal1 = SensorValue(gyro);
 	potVal2 = SensorValue(rightLiftPot);
 	writeDebugStreamLine("Left Pot: %2f; Right Pot: %2f", potVal1, potVal2);
-	delay(500);
+	delay(1000);
 }
 
 }

@@ -36,13 +36,13 @@ void initGyro(){
 //Drives a given number of inches
 void driveADistance(float inchesToDrive)
 {
-	float ticksToDrive = 360 * inchesToDrive / (4 * PI);
-	SensorValue[leftEncoder] = 0;
-	SensorValue[rightEncoder] = 0;
+	float ticksToDrive = 360 * inchesToDrive / (8 * PI);
+	SensorValue(leftEncoder) = 0;
+	SensorValue(rightEncoder) = 0;
 	int rightEncoderCount = 0, leftEncoderCount = 0;
 	bool rightIsDone = false, leftIsDone = false;
-	float Kp = 0.5;
-	SensorValue[gyro] = 0;
+	float Kp = 0.05;
+	SensorValue(gyro) = 0;
 	int gyroReading = SensorValue[gyro];
 	while (!rightIsDone || !leftIsDone)
 	{
@@ -50,40 +50,65 @@ void driveADistance(float inchesToDrive)
 		leftIsDone = leftEncoderCount>=ticksToDrive;
 		gyroReading = SensorValue[gyro];
 		rightEncoderCount += SensorValue[rightEncoder];
-		SensorValue[rightEncoder] = 0;
-		leftEncoderCount = SensorValue[leftEncoder];
-		SensorValue[leftEncoder] = 0;
+		SensorValue(rightEncoder) = 0;
+		leftEncoderCount += SensorValue[leftEncoder];
+		SensorValue(leftEncoder) = 0;
 		float error = gyroReading;
-		setPower(rightDrive, rightIsDone ? 0 : 75 - Kp*error);
-		setPower(leftDrive, leftIsDone ? 0 : 75 + Kp*error);
+		setPower(rightDrive, rightIsDone ? 0 : bound(75 - Kp*error, 0, 1));
+		setPower(leftDrive, leftIsDone ? 0 : bound(75 + Kp*error, 0, 1));
 	}
+	setPower(rightDrive, -0.05);
+	setPower(leftDrive, -0.05);
+	delay(40);
+	setPower(rightDrive, 0);
+	setPower(leftDrive, 0);
 }
 void turnRight(float degreesToTurn)
 {
 	int deciDegreesToTurn = degreesToTurn * 10;
 	SensorValue[gyro] = 0;
 	int gyroReading = -SensorValue[gyro];
-	while (gyroReading < deciDegreesToTurn)
+	while (gyroReading != deciDegreesToTurn)
 	{
 		gyroReading = -SensorValue[gyro];
-		setPower(rightDrive, -0.5);
-		setPower(leftDrive, 0.5);
+		if(gyroReading < deciDegreesToTurn){
+			setPower(rightDrive, -0.33);
+			setPower(leftDrive, 0.33);
+		}
+		if(gyroReading > deciDegreesToTurn){
+			setPower(rightDrive, 0.33);
+			setPower(leftDrive, -0.33);
+		}
 	}
-	setPower(rightDrive, 0);
+	setPower(leftDrive, 0.05);
+	setPower(rightDrive, -0.05);
+	delay(40);
 	setPower(leftDrive, 0);
+	setPower(rightDrive, 0);
 }
 
 void turnLeft(float degreesToTurn)
 {
-	int deciDegreesToTurn = degreesToTurn * 10;
+	int deciDegreesToTurn = (degreesToTurn-6) * 10;
 	SensorValue[gyro] = 0;
 	int gyroReading = SensorValue[gyro];
-	while (gyroReading < deciDegreesToTurn)
+	while (gyroReading != deciDegreesToTurn)
 	{
 		gyroReading = SensorValue[gyro];
-		setPower(rightDrive, 0.5);
-		setPower(leftDrive, -0.5);
+		if (gyroReading < deciDegreesToTurn)
+		{
+			setPower(rightDrive, 0.33);
+			setPower(leftDrive, -0.33);
+		}
+		if (gyroReading > deciDegreesToTurn)
+		{
+			setPower(rightDrive, -0.33);
+			setPower(leftDrive, 0.33);
+		}
 	}
+	setPower(leftDrive, -0.05);
+	setPower(rightDrive, 0.05);
+	delay(40);
 	setPower(leftDrive, 0);
 	setPower(rightDrive, 0);
 }
@@ -93,22 +118,22 @@ task liftControl()
 {
 	float leftPot = SensorValue(leftLiftPot);
 	float rightPot = SensorValue(rightLiftPot);
-	float leftPotTarget = 3610;
-	float rightPotTarget = 3673;
+	float leftPotTarget = 525;
+	float rightPotTarget = 3290;
 	float leftError = 0;
 	float rightError = 0;
-	float kPl = 0.00029;
-	float kPr = 0.00024;
+	float kPl = 0.00025;
+	float kPr = 0.00025;
 	while (true)
 	{
 		leftPot = SensorValue(leftLiftPot);
 		rightPot = SensorValue(rightLiftPot);
-		leftPotTarget = 3610 - (18.05*liftTargetPercent);
-		rightPotTarget = 3673 - (18.79*liftTargetPercent);
+		leftPotTarget = 525 + (15.6*liftTargetPercent);
+		rightPotTarget = 3290 - (16.0*liftTargetPercent);
 		leftError = leftPot - leftPotTarget;
 		rightError = rightPot - rightPotTarget;
-		motor[lLift] = leftError*kPl*(3610-leftPotTarget);
-		motor[rLift] = leftError*kPr*(3673-rightPotTarget);
+		motor[lLift] = leftError*kPl*(525+leftPotTarget);
+		motor[rLift] = leftError*kPr*(3290-rightPotTarget);
 		//delay(30);
 	}
 }
@@ -212,27 +237,38 @@ void progSkills()
 	offenseMatchAuto();
 }
 
+void autoTest()
+{
+	driveADistance(12);
+	turnLeft(90);
+	driveADistance(24);
+	//turnRight(90);
+	//turnLeft(90);
+
+}
+
 task autonomous()
 {
-	oldAutoRoutine();
+	//oldAutoRoutine();
 	//defenseAuto();
 	//offenseMatchAuto();
 	//progSkills();
+	autoTest();
 }
 
 task usercontrol()
 {
 	while (true)
 	{
-		bool isLeftUp = (bool)SensorValue(leftButton);
-		bool isRightUp = (bool)SensorValue(rightButton);
+		bool isLeftUp = SensorValue(leftButton) == 1;
+		bool isRightUp = SensorValue(rightButton) == 1;
 		//startTask(liftControl);
 		startTask(lcdManager);
 		setPower(lift, (isLeftUp&&isRightUp&&vexRT[Btn6U]) ? 0.3 : vexRT[Btn6U] ? 1 : vexRT[Btn6D] ? -1 : 0);
 		//liftTargetPercent = liftTargetPercent + 2*(vexRT[Btn5U] ? 1 : (vexRT[Btn5D] ? -1 : 0));
-		liftTargetPercent = bound(liftTargetPercent, 0, 100);
+		//liftTargetPercent = bound(liftTargetPercent, 0, 100);
 		setPower(leftDrive, vexRT[Ch3]/127.);
-		setPower(rightDrive, -vexRT[Ch2]/127.);
+		setPower(rightDrive, vexRT[Ch2]/127.);
 		setPower(mobileGoal, vexRT[Btn8U] ? 1 : vexRT[Btn8D] ? -1 : 0);
 		motor[chainBar] = vexRT[Btn7D] ? 127 : vexRT[Btn7U] ? -127 : 0;
 		motor[claw] = vexRT[Btn5D] ? 127 : vexRT[Btn5U] ? -127 : 0;
