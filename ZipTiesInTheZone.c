@@ -34,7 +34,18 @@ void initGyro(){
 }
 
 //Drives a given number of inches
-void driveADistance(float inchesToDrive)
+void driveT(bool forward, int time)
+{
+	setPower(rightDrive, forward ? 1 : -1);
+	setPower(leftDrive, forward ? 1 : -1);
+	delay(time);
+	setPower(rightDrive, forward ? -0.15 : 0.15);
+	setPower(leftDrive, forward ? -0.15 : 0.15);
+	delay(40);
+	setPower(rightDrive, 0);
+	setPower(leftDrive, 0);
+}
+void driveForward(float inchesToDrive)
 {
 	float ticksToDrive = 360 * inchesToDrive / (8 * PI);
 	SensorValue(leftEncoder) = 0;
@@ -57,12 +68,44 @@ void driveADistance(float inchesToDrive)
 		setPower(rightDrive, rightIsDone ? 0 : bound(75 - Kp*error, 0, 1));
 		setPower(leftDrive, leftIsDone ? 0 : bound(75 + Kp*error, 0, 1));
 	}
-	setPower(rightDrive, -0.05);
-	setPower(leftDrive, -0.05);
+	setPower(rightDrive, -0.15);
+	setPower(leftDrive, -0.15);
 	delay(40);
 	setPower(rightDrive, 0);
 	setPower(leftDrive, 0);
 }
+
+//Drives a given number of inches
+void driveBackward(float inchesToDrive)
+{
+	float ticksToDrive = -360 * inchesToDrive / (8 * PI);
+	SensorValue(leftEncoder) = 0;
+	SensorValue(rightEncoder) = 0;
+	int rightEncoderCount = 0, leftEncoderCount = 0;
+	bool rightIsDone = false, leftIsDone = false;
+	float Kp = 0.05;
+	SensorValue(gyro) = 0;
+	int gyroReading = SensorValue[gyro];
+	while (!rightIsDone || !leftIsDone)
+	{
+		rightIsDone = rightEncoderCount<=ticksToDrive;
+		leftIsDone = leftEncoderCount<=ticksToDrive;
+		gyroReading = SensorValue[gyro];
+		rightEncoderCount += SensorValue[rightEncoder];
+		SensorValue(rightEncoder) = 0;
+		leftEncoderCount += SensorValue[leftEncoder];
+		SensorValue(leftEncoder) = 0;
+		float error = gyroReading;
+		setPower(rightDrive, rightIsDone ? 0 : bound(-75 - Kp*error, -1, 0));
+		setPower(leftDrive, leftIsDone ? 0 : bound(-75 + Kp*error, -1, 0));
+	}
+	setPower(rightDrive, 0.15);
+	setPower(leftDrive, 0.15);
+	delay(40);
+	setPower(rightDrive, 0);
+	setPower(leftDrive, 0);
+}
+
 void turnRight(float degreesToTurn)
 {
 	int deciDegreesToTurn = degreesToTurn * 10;
@@ -174,11 +217,7 @@ task lcdManager()
 
 void oldAutoRoutine()
 {
-	setPower(leftDrive, 1);
-	setPower(rightDrive, -1);
-	delay (3200);
-	setPower(leftDrive, 0);
-	setPower(rightDrive, 0);
+	driveT(true, 3200);
 	// old ^
 	setPower(lift, 1);
 	delay(650);
@@ -203,31 +242,31 @@ void oldAutoRoutine()
 
 void defenseAuto()
 {
-	driveADistance(100);
+	driveForward(100);
 	turnLeft(75);
-	driveADistance(30);
+	driveForward(30);
 }
 
 void offenseMatchAuto()
 {
-	driveADistance(54);
+	driveForward(88);
 	setPower(mobileGoal, 1);
-	delay(1500);
+	delay(2000);
 	setPower(mobileGoal, 0);
-	turnRight(180);
-	driveADistance(30);
+	motor[claw] = -127;
+	delay(750);
+	motor[claw] = 0;
+	driveBackward(41);
+	turnLeft(180);
 	setPower(lift, 1);
 	delay(1000);
 	setPower(lift, 0);
-	driveADistance(30);
+	driveForward(40);
+	driveT(true, 750);
 	setPower(mobileGoal, -1);
 	delay(500);
-	setPower(leftDrive, -1);
-	setPower(rightDrive, -1);
-	delay(1000);
+	driveBackward(12);
 	setPower(mobileGoal, 0);
-	setPower(leftDrive, 0);
-	setPower(rightDrive, 0);
 
 
 }
@@ -235,15 +274,70 @@ void offenseMatchAuto()
 void progSkills()
 {
 	offenseMatchAuto();
+	setPower(mobileGoal, -1);
+	delay(1500);
+	setPower(mobileGoal, 1);
+	delay(250);
+	setPower(mobileGoal, 0);
+	driveT(false, 750);
+	turnLeft(135);
+	driveForward(36);
+	turnLeft(90);
+	driveForward(12);
+	setPower(mobileGoal, 1);
+	delay(700);
+	setPower(mobileGoal, 0);
+	driveBackward(12);
+	turnLeft(135);
+	driveT(true, 1500);
+
 }
 
 void autoTest()
 {
-	driveADistance(12);
-	turnLeft(90);
-	driveADistance(24);
+	//driveForward(12);
+	//turnLeft(90);
+	//driveForward(24);
 	//turnRight(90);
 	//turnLeft(90);
+	//driveBackward(12);
+
+}
+void moveForwardAuto()
+{
+	driveForward(84);
+	setPower(mobileGoal, 1);
+	delay(1000);
+	setPower(mobileGoal, 0);
+	motor[claw] = -127;
+	delay(750);
+	motor[claw] = 0;
+	driveBackward(60);
+	turnRight(180);
+	//driveForward(14);
+	setPower(mobileGoal, -1);
+	delay(1500);
+	setPower(mobileGoal, 0);
+	driveBackward(20);
+
+}
+void moveForwardAutoT()
+{
+	driveT(true, 3250);
+	setPower(mobileGoal, 1);
+	delay(1000);
+	setPower(mobileGoal, 0);
+	motor[claw] = -127;
+	delay(750);
+	motor[claw] = 0;
+	driveT(false, 2200);
+	turnRight(180);
+	//driveForward(14);
+	setPower(mobileGoal, -1);
+	delay(1500);
+	setPower(mobileGoal, 0);
+	driveT(false, 750);
+
 
 }
 
@@ -251,9 +345,11 @@ task autonomous()
 {
 	//oldAutoRoutine();
 	//defenseAuto();
+	//moveForwardAuto();
+	moveForwardAutoT();
 	//offenseMatchAuto();
 	//progSkills();
-	autoTest();
+	//autoTest();
 }
 
 task usercontrol()
