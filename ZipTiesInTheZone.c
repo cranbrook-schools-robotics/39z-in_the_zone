@@ -65,8 +65,8 @@ void driveForward(float inchesToDrive)
 		leftEncoderCount += SensorValue[leftEncoder];
 		SensorValue(leftEncoder) = 0;
 		float error = gyroReading;
-		setPower(rightDrive, rightIsDone ? 0 : bound(75 - Kp*error, 0, 1));
-		setPower(leftDrive, leftIsDone ? 0 : bound(75 + Kp*error, 0, 1));
+		setPower(rightDrive, rightIsDone ? 0 : bound(0.75 - Kp*error, 0, 1));
+		setPower(leftDrive, leftIsDone ? 0 : bound(0.75 + Kp*error, 0, 1));
 	}
 	setPower(rightDrive, -0.15);
 	setPower(leftDrive, -0.15);
@@ -96,8 +96,8 @@ void driveBackward(float inchesToDrive)
 		leftEncoderCount += SensorValue[leftEncoder];
 		SensorValue(leftEncoder) = 0;
 		float error = gyroReading;
-		setPower(rightDrive, rightIsDone ? 0 : bound(-75 - Kp*error, -1, 0));
-		setPower(leftDrive, leftIsDone ? 0 : bound(-75 + Kp*error, -1, 0));
+		setPower(rightDrive, rightIsDone ? 0 : bound(-0.75 - Kp*error, -1, 0));
+		setPower(leftDrive, leftIsDone ? 0 : bound(-0.75 + Kp*error, -1, 0));
 	}
 	setPower(rightDrive, 0.15);
 	setPower(leftDrive, 0.15);
@@ -115,12 +115,12 @@ void turnRight(float degreesToTurn)
 	{
 		gyroReading = -SensorValue[gyro];
 		if(gyroReading < deciDegreesToTurn){
-			setPower(rightDrive, -0.33);
-			setPower(leftDrive, 0.33);
+			setPower(rightDrive, -0.5);
+			setPower(leftDrive, 0.5);
 		}
 		if(gyroReading > deciDegreesToTurn){
-			setPower(rightDrive, 0.33);
-			setPower(leftDrive, -0.33);
+			setPower(rightDrive, 0.5);
+			setPower(leftDrive, -0.5);
 		}
 	}
 	setPower(leftDrive, 0.05);
@@ -140,13 +140,13 @@ void turnLeft(float degreesToTurn)
 		gyroReading = SensorValue[gyro];
 		if (gyroReading < deciDegreesToTurn)
 		{
-			setPower(rightDrive, 0.33);
-			setPower(leftDrive, -0.33);
+			setPower(rightDrive, 0.5);
+			setPower(leftDrive, -0.5);
 		}
 		if (gyroReading > deciDegreesToTurn)
 		{
-			setPower(rightDrive, -0.33);
-			setPower(leftDrive, 0.33);
+			setPower(rightDrive, -0.5);
+			setPower(leftDrive, 0.5);
 		}
 	}
 	setPower(leftDrive, -0.05);
@@ -179,6 +179,14 @@ task liftControl()
 		motor[rLift] = leftError*kPr*(3290-rightPotTarget);
 		//delay(30);
 	}
+}
+void moGoUp(bool up, int time)
+{
+	setPower(mobileGoal, up ? 1 : -1);
+	delay(time);
+	setPower(mobileGoal, 0);
+
+
 }
 
 void initLCD()
@@ -303,23 +311,62 @@ void autoTest()
 	//driveBackward(12);
 
 }
-void moveForwardAuto()
+void fivePointZoneAuto()
 {
-	driveForward(84);
+	driveForward(98);
 	setPower(mobileGoal, 1);
-	delay(1000);
+	driveT(true, 750);
+	delay(250);
 	setPower(mobileGoal, 0);
 	motor[claw] = -127;
 	delay(750);
 	motor[claw] = 0;
-	driveBackward(60);
+	driveBackward(100);
 	turnRight(180);
 	//driveForward(14);
-	setPower(mobileGoal, -1);
-	delay(1500);
-	setPower(mobileGoal, 0);
+	moGoUp(false, 1500);
 	driveBackward(20);
 
+}
+void tenPointZoneAuto()
+{
+	driveForward(98);
+	setPower(mobileGoal, 1);
+	driveT(true, 750);
+	delay(250);
+	setPower(mobileGoal, 0);
+	motor[claw] = -127;
+	delay(750);
+	motor[claw] = 0;
+	driveBackward(100);
+	turnRight(180);
+	driveT(true, 1250);
+	moGoUp(false, 750);
+	driveT(false, 750);
+
+}
+void twentyPointZoneAuto()
+{
+	driveForward(98);
+	setPower(mobileGoal, 1);
+	driveT(true, 750);
+	delay(250);
+	setPower(mobileGoal, 0);
+	motor[claw] = -127;
+	delay(750);
+	motor[claw] = 0;
+	driveBackward(105);
+	turnRight(135);
+	driveForward(42);
+	turnRight(90);
+	setPower(lift, 1);
+	delay(500);
+	setPower(lift, 0);
+	moGoUp(true, 250);
+	driveT(true, 750);
+	//moGoUp(true, 750);
+	driveT(true, 1000);
+	driveT(false, 750);
 }
 void moveForwardAutoT()
 {
@@ -338,15 +385,16 @@ void moveForwardAutoT()
 	setPower(mobileGoal, 0);
 	driveT(false, 750);
 
-
 }
 
 task autonomous()
 {
 	//oldAutoRoutine();
 	//defenseAuto();
-	//moveForwardAuto();
-	moveForwardAutoT();
+	//fivePointZoneAuto();
+	//tenPointZoneAuto();
+	twentyPointZoneAuto();
+	//moveForwardAutoT();
 	//offenseMatchAuto();
 	//progSkills();
 	//autoTest();
