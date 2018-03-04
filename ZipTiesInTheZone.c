@@ -6,6 +6,8 @@
 #include <Vex_Competition_Includes.c>
 #include <CKVexMotorSet.h>
 #include <CKVexIME.h>
+#include <CKTankDrive.h>
+#include <LCDBattery.h>
 
 tMotor liftMotors[] = {lLift, rLift};
 MotorSet lift;
@@ -20,10 +22,6 @@ MotorSet mobileGoal;
 
 int liftTargetPercent = 0;
 
-void initIME(){
-	nMotorEncoder[rBack] = 0;
-	nMotorEncoder[lBack] = 0;
-}
 
 void initGyro(){
 	SensorType[gyro] = sensorNone; //Fixes common RobotC error with initializing Gyroscope
@@ -200,7 +198,6 @@ void pre_auton()
 {
 	bStopTasksBetweenModes = true;
 	initLCD();
-	initIME();
 	initGyro();
 	MotorSetInit (lift, liftMotors, 2);
 	MotorSetInit (leftDrive, leftDriveMotors, 2);
@@ -281,23 +278,25 @@ void offenseMatchAuto()
 
 void progSkills()
 {
-	offenseMatchAuto();
-	setPower(mobileGoal, -1);
-	delay(1500);
-	setPower(mobileGoal, 1);
-	delay(250);
-	setPower(mobileGoal, 0);
-	driveT(false, 750);
-	turnLeft(135);
-	driveForward(36);
-	turnLeft(90);
-	driveForward(12);
-	setPower(mobileGoal, 1);
-	delay(700);
-	setPower(mobileGoal, 0);
-	driveBackward(12);
-	turnLeft(135);
-	driveT(true, 1500);
+	//offenseMatchAuto();
+	//setPower(mobileGoal, -1);
+	//delay(1500);
+	//setPower(mobileGoal, 1);
+	//delay(250);
+	//setPower(mobileGoal, 0);
+	//driveT(false, 750);
+	//turnLeft(135);
+	//driveForward(36);
+	//turnLeft(90);
+	//driveForward(12);
+	//setPower(mobileGoal, 1);
+	//delay(700);
+	//setPower(mobileGoal, 0);
+	//driveBackward(12);
+	//turnLeft(135);
+	//driveT(true, 1500);
+	//fivePointZoneAuto();
+
 
 }
 
@@ -321,9 +320,15 @@ void fivePointZoneAuto()
 	motor[claw] = -127;
 	delay(750);
 	motor[claw] = 0;
+	motor[chainBar] = 127;
+	delay(750);
+	motor[chainBar] = 0;
 	driveBackward(100);
 	turnRight(180);
 	//driveForward(14);
+	motor[chainBar] = -127;
+	delay(750);
+	motor[chainBar] = 0;
 	moGoUp(false, 1500);
 	driveBackward(20);
 
@@ -338,8 +343,14 @@ void tenPointZoneAuto()
 	motor[claw] = -127;
 	delay(750);
 	motor[claw] = 0;
-	driveBackward(100);
-	turnRight(180);
+	motor[chainBar] = 127;
+	delay(750);
+	motor[chainBar] = 0;
+	driveBackward(112);
+	turnRight(225);
+	motor[chainBar] = -127;
+	delay(750);
+	motor[chainBar] = 0;
 	driveT(true, 1250);
 	moGoUp(false, 750);
 	driveT(false, 750);
@@ -348,23 +359,31 @@ void tenPointZoneAuto()
 void twentyPointZoneAuto()
 {
 	driveForward(98);
-	setPower(mobileGoal, 1);
 	driveT(true, 750);
-	delay(250);
+	setPower(mobileGoal, 1);
+	delay(1000);
 	setPower(mobileGoal, 0);
 	motor[claw] = -127;
 	delay(750);
 	motor[claw] = 0;
-	driveBackward(105);
+	motor[chainBar] = 127;
+	delay(750);
+	motor[chainBar] = 0;
+	driveBackward(112);
 	turnRight(135);
 	driveForward(42);
 	turnRight(90);
+	//motor[chainBar] = 127;
+	moGoUp(true, 250);
+	//delay(500);
+	//motor[chainBar] = 0;
+	driveT(true, 750);
 	setPower(lift, 1);
 	delay(500);
 	setPower(lift, 0);
-	moGoUp(true, 250);
-	driveT(true, 750);
-	//moGoUp(true, 750);
+	motor[chainBar] = -127;
+	delay(450);
+	motor[chainBar] = 0;
 	driveT(true, 1000);
 	driveT(false, 750);
 }
@@ -391,9 +410,9 @@ task autonomous()
 {
 	//oldAutoRoutine();
 	//defenseAuto();
-	//fivePointZoneAuto();
+	fivePointZoneAuto();
 	//tenPointZoneAuto();
-	twentyPointZoneAuto();
+	//twentyPointZoneAuto();
 	//moveForwardAutoT();
 	//offenseMatchAuto();
 	//progSkills();
@@ -411,7 +430,7 @@ task usercontrol()
 		setPower(lift, (isLeftUp&&isRightUp&&vexRT[Btn6U]) ? 0.3 : vexRT[Btn6U] ? 1 : vexRT[Btn6D] ? -1 : 0);
 		//liftTargetPercent = liftTargetPercent + 2*(vexRT[Btn5U] ? 1 : (vexRT[Btn5D] ? -1 : 0));
 		//liftTargetPercent = bound(liftTargetPercent, 0, 100);
-		setPower(leftDrive, vexRT[Ch3]/127.);
+		setPower(leftDrive, vexRT[Ch2]/127.);
 		setPower(rightDrive, vexRT[Ch2]/127.);
 		setPower(mobileGoal, vexRT[Btn8U] ? 1 : vexRT[Btn8D] ? -1 : 0);
 		motor[chainBar] = vexRT[Btn7D] ? 127 : vexRT[Btn7U] ? -127 : 0;
