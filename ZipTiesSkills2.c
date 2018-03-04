@@ -2,7 +2,7 @@
 #pragma platform(VEX2)
 #pragma competitionControl(Competition)
 #include "Vex_Competition_Includes.c"
-#include <CKTankDrive.h>
+//#include <CKTankDrive.h>
 #include <LCDBattery.h>
 
 /*---------------------------------------------------------------------------*/
@@ -197,15 +197,16 @@ void neargoal()
 
 task autonomous()
 {
-	goalDown(400);
-	fwdR(600,80);
+	goalDown(425);
+	fwdR(700,80);
 	goalUp(600);
 	wait1Msec(200);
-	leftR(10,60);
-	leftR(285,50);
-	fwdR(660,60);
+	leftR(725,60);
+	leftR(110,50);
+	driveT(driveTrain,true,1500,0.70);
+
 	wait1Msec(200);
-	leftR(12,40);
+	leftR(48,40);
   fwdR(325,127);
 	bwdR(250,67);
   /*wait1Msec(200);
@@ -216,20 +217,20 @@ task autonomous()
 // next, the red cone on left
 	rightR(145,60);*/
 	wait1Msec(300);
-	rightR(90, 60);
+	rightR(360, 60);
 	fwdR(70, 30);
-	rightR(65, 60);
+	rightR(260, 60);
 	fwdR(140, 95);
-	rightR(160, 60);
+	rightR(640, 60);
 	wait1Msec(200);
 	goalDown(600);
 	fwdR(540, 127);
 	goalUp(600);
 	wait1Msec(200);
 	bwdR(500, 50);
-	leftR(105, 50);
+	leftR(420, 50);
 	bwdR(100, 60);
-	leftR(60,60);
+	leftR(240,60);
 	fwdR(350, 127);
 	bwdR(100,127);
 

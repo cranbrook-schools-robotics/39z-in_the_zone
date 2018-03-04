@@ -6,9 +6,9 @@
 #include <LCDBattery.h>
 
 tMotor leftDriveMotors[] = {LeftFront, LeftMid, LeftRear};
-MotorSet leftSide;
+//MotorSet leftSide;
 tMotor rightDriveMotors[] = {RightFront, RightMid, RightRear};
-MotorSet rightSide;
+//MotorSet rightSide;
 TankDrive driveTrain;
 
 tMotor mobileGoalMotors[] = {LeftGoal, RightGoal};
@@ -18,10 +18,10 @@ MotorSet mobileGoal;
 void pre_auton()
 {
 	bStopTasksBetweenModes = true;
-	MotorSetInit(leftSide, leftDriveMotors, 3);
-	MotorSetInit(rightSide, rightDriveMotors, 3);
+	//MotorSetInit(leftSide, leftDriveMotors, 3);
+	//MotorSetInit(rightSide, rightDriveMotors, 3);
 	MotorSetInit(mobileGoal, mobileGoalMotors, 2);
-	TankDriveInit(driveTrain, leftSide, rightSide, leftEncoder, rightEncoder, gyro, 4, 0.05);
+	TankDriveInit(driveTrain, leftDriveMotors, rightDriveMotors, 3, leftEncoder, rightEncoder, gyro, 4, 0.01);
 	LCDInitialize();
 }
 
@@ -60,14 +60,31 @@ void neargoal()
 
 task autonomous()
 {
-	goalDown(400);
-	driveForward(driveTrain, 42, 0.63);
+	goalDown(650);
+	driveForward(driveTrain, 57, 0.6);
 	goalUp(600);
 	wait1Msec(200);
-	turnLeft(driveTrain, 6.7, 0.47);
-	turnLeft(driveTrain, 190, 0.39);
-	driveForward(driveTrain, 46, 0.47);
-	wait1Msec(200);
+	turnLeft(driveTrain, 180, 0.4);
+	driveT(driveTrain,true,1500,0.70);
+	driveBackward(driveTrain,22,0.7)
+	turnRight(driveTrain,90,.25);
+	driveForward(driveTrain,30,0.6);
+	turnRight(driveTrain,34,0.25);
+	goalDown(600);
+	driveForward(driveTrain,65,0.75);
+	goalUp(600);
+	driveBackward(driveTrain,53,0.7);
+	turnLeft(driveTrain,90,0.4);
+	driveForward(driveTrain,20,0.7);
+	driveBackward(driveTrain,10,0.5);
+	turnLeft(driveTrain,45,0.3);
+	driveForward(driveTrain,30,0.7);
+	turnLeft(driveTrain,45,0.3);
+	goalDown(400);
+	driveForward(driveTrain,50,0.7);
+	driveBackward(driveTrain,50,0.6);
+
+	/*wait1Msec(200);
 	turnLeft(driveTrain, 8, 0.315);
 	driveForward(driveTrain, 22.7, 0.9);
 	driveBackward(driveTrain, 17.5, 0.53);
@@ -78,17 +95,16 @@ task autonomous()
 	delay(250);
 	// next, the red cone on left
 	rightR(145,60);*/
-	wait1Msec(300);
+
 	//rightR(90, 60);
 	//fwdR(70, 30);
 	//rightR(65, 60);
 	//fwdR(140, 95);
 	//rightR(160, 60);
-	wait1Msec(200);
-	goalDown(600);
+
 	//fwdR(540, 127);
-	goalUp(600);
-	wait1Msec(200);
+
+
 	//bwdR(500, 50);
 	//leftR(105, 50);
 	//bwdR(100, 60);
