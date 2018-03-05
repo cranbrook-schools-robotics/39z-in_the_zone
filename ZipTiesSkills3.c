@@ -1,4 +1,4 @@
-#pragma config(UserModel, "C:/Users/rstudent/code/39z-in_the_zone/39ZSkillsbotConfig.c")
+#pragma config(UserModel, "39ZSkillsbotConfig.c")
 #pragma platform(VEX2)
 #pragma competitionControl(Competition)
 #include "Vex_Competition_Includes.c"
@@ -66,7 +66,7 @@ task autonomous()
 	wait1Msec(200);
 	turnLeft(driveTrain, 180, 0.4);
 	driveT(driveTrain,true,1500,0.70);
-	driveBackward(driveTrain,22,0.7)
+	driveBackward(driveTrain,22,0.7);
 	turnRight(driveTrain,90,.25);
 	driveForward(driveTrain,30,0.6);
 	turnRight(driveTrain,34,0.25);
@@ -82,36 +82,76 @@ task autonomous()
 	turnLeft(driveTrain,45,0.3);
 	goalDown(400);
 	driveForward(driveTrain,50,0.7);
+	goalUp(400);
 	driveBackward(driveTrain,50,0.6);
-
-	/*wait1Msec(200);
-	turnLeft(driveTrain, 8, 0.315);
-	driveForward(driveTrain, 22.7, 0.9);
-	driveBackward(driveTrain, 17.5, 0.53);
-	/*wait1Msec(200);
-	rightR(270,60);
-	fwdR(325,127);
-	bwdR(197,67);
-	delay(250);
-	// next, the red cone on left
-	rightR(145,60);*/
-
-	//rightR(90, 60);
-	//fwdR(70, 30);
-	//rightR(65, 60);
-	//fwdR(140, 95);
-	//rightR(160, 60);
-
-	//fwdR(540, 127);
-
-
-	//bwdR(500, 50);
-	//leftR(105, 50);
-	//bwdR(100, 60);
-	//leftR(60,60);
-	//fwdR(350, 127);
-	//bwdR(100,127);
-
+	turnLeft(driveTrain,90,0.3);
+	driveForward(driveTrain,20,0.7);
+	driveBackward(driveTrain,10,0.7);
+	turnRight(driveTrain,180,0.3);
+	goalDown(400);
+	driveForward(driveTrain,50,0.7);
+	goalUp(400);
+	driveBackward(driveTrain,60,0.5);
+	turnRight(driveTrain,135,0.4);
+	driveForward(driveTrain,10,0.75);
+	turnLeft(driveTrain,90,0.35);
+	driveForward(driveTrain,10,0.7);
+	goalDown(400);
+	driveBackward(driveTrain,10,0.7);
+	turnRight(driveTrain,180,0.5);
+	goalDown(400);
+	driveForward(driveTrain,50,0.6);
+	goalUp(400);
+	driveBackward(driveTrain,50,0.45);
+	turnLeft(driveTrain,135,0.4);
+	driveForward(driveTrain,15,0.1);
+	turnLeft(driveTrain,180,0.4);
+	driveForward(driveTrain,50,0.7);
+	goalDown(400);
+	driveBackward(driveTrain,15,0.55);
+	turnLeft(driveTrain,180,0.6);
+	driveForward(driveTrain,40,0.7);
+	turnRight(driveTrain,30,0.7);
+	driveForward(driveTrain,72,0.7);
+	turnLeft(driveTrain,90,0.5);
+	driveForward(driveTrain,15,0.4);
+	turnLeft(driveTrain,90,0.35);
+	driveForward(driveTrain,20,0.7);
+	goalDown(400);
+	driveBackward(driveTrain,20,0.6);
+	turnLeft(driveTrain,180,0.4);
+	driveForward(driveTrain,65,0.7);
+	goalUp(400);
+	driveForward(driveTrain,20,0.5);
+	turnLeft(driveTrain,20,0.3);
+	driveForward(driveTrain,40,0.8);
+	driveBackward(driveTrain,15,0.5);
+	turnRight(driveTrain,90,0.4);
+	driveForward(driveTrain,10,0.4);
+	turnRight(driveTrain,45,0.42);
+	goalDown(400);
+	driveForward(driveTrain,65,0.4);
+	goalUp(400);
+	driveBackward(driveTrain,50,0.4);
+	turnRight(driveTrain,135,0.5);
+	driveForward(driveTrain,15,0.45);
+	turnRight(driveTrain,90,0.4);
+	driveForward(driveTrain,15,0.5);
+	goalDown(400);
+	driveBackward(driveTrain,15,0.6);
+	turnLeft(driveTrain,90,0.45);
+	driveForward(driveTrain,55,0.6);
+	turnLeft(driveTrain,45,0.5);
+	goalDown(400);
+	driveForward(driveTrain,60,0.5);
+	goalUp(400);
+	driveBackward(driveTrain,50,0.4);
+	turnLeft(driveTrain,140,0.35);
+	driveForward(driveTrain,20,0.4);
+	turnLeft(driveTrain,90,0.29);
+	driveForward(driveTrain,20,0.5);
+	goalDown(400);
+	driveBackward(driveTrain,20,0.5);
 }
 
 
