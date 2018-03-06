@@ -41,23 +41,6 @@ void goalDown(int t)// lower goal lift
 	setPower(mobileGoal, 0);
 }
 
-void neargoal()
-{
-	goalDown(400);
-	driveForward(driveTrain, 42, 0.39);
-	goalUp(600);
-	wait1Msec(200);
-	turnLeft(driveTrain, 180, 0.39);
-	driveForward(driveTrain, 35, 0.39);
-	wait1Msec(200);
-	turnLeft(driveTrain, 116.7, 0.315);
-	driveForward(driveTrain, 7, 0.315);
-	wait1Msec(200);
-	turnRight(driveTrain, 200, 0.47);
-	driveForward(driveTrain, 21, 0.47);
-	driveBackward(driveTrain, 12.2, 0.527);
-}
-
 task autonomous()
 {
 	goalDown(650);
@@ -165,5 +148,9 @@ task usercontrol()
 		//setPower(leftSide, (abs(vexRT[Ch3]) > 10) ? vexRT[Ch3]/127.0 : 0);
 		//setPower(rightSide, (abs(vexRT[Ch2]) > 10) ? vexRT[Ch2]/127.0 : 0);
 		setPower(mobileGoal, vexRT[Btn6U] ? 1 : vexRT[Btn6D] ? -1 : 0);
+		if (vexRT[Btn7L])
+			startTask(autonomous);
+		if (vexRT[Btn7R])
+			stopTask(autonomous);
 	}
 }
